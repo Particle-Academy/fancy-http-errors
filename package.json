@@ -1,0 +1,76 @@
+{
+    "name": "@particle-academy/fancy-http-errors",
+    "version": "0.1.0",
+    "description": "Turn any HTTP error response into one safe sentence for the UI: the Fancy error envelope, FastAPI's detail and 422 lists, Laravel validation, proxy HTML pages, no response at all. A 5xx never shows server text. Zero runtime dependencies, no React.",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Particle-Academy/fancy-http-errors.git"
+    },
+    "homepage": "https://github.com/Particle-Academy/fancy-http-errors#readme",
+    "bugs": "https://github.com/Particle-Academy/fancy-http-errors/issues",
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            }
+        },
+        "./envelope.schema.json": "./envelope.schema.json",
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "dist",
+        "envelope.schema.json",
+        "README.md",
+        "CHANGELOG.md",
+        "LICENSE"
+    ],
+    "sideEffects": false,
+    "scripts": {
+        "build": "tsup",
+        "dev": "tsup --watch",
+        "lint": "tsc --noEmit",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "clean": "rm -rf dist",
+        "prepublishOnly": "tsup"
+    },
+    "keywords": [
+        "http",
+        "errors",
+        "error-envelope",
+        "fastapi",
+        "laravel",
+        "validation",
+        "422",
+        "retry-after",
+        "request-id",
+        "fancy",
+        "particle-academy"
+    ],
+    "devDependencies": {
+        "@types/node": "^22",
+        "tsup": "^8.5.0",
+        "typescript": "^5.8.0",
+        "vitest": "^4.1.12"
+    },
+    "engines": {
+        "node": ">=22"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "license": "MIT",
+    "overrides": {
+        "esbuild": "^0.28.1",
+        "source-map-js": "^1.2.2"
+    }
+}
