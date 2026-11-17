@@ -30,6 +30,13 @@ send without it:
 | an nginx/Cloudflare HTML page, plain text, nothing | the sentence for the status |
 | `Retry-After: 30` or an HTTP-date | `retryAfter` and "Try again in 30 seconds." |
 
+<!-- fancy-agents-note:start -->
+> **For agents.** This package is not listed on the Fancy MCP catalog server
+> yet. The server, `https://ui.particle.academy/mcp` (streamable HTTP, no API key; MCP id
+> `fancy-ui`), lists the released Fancy packages with install commands and
+> docs. How an agent installs and uses this package is in [AGENTS.md](https://github.com/Particle-Academy/fancy-http-errors/blob/main/AGENTS.md).
+<!-- fancy-agents-note:end -->
+
 ## What it will never do
 
 - **Show server text on a 5xx.** A Laravel app with `APP_DEBUG=true` answers a

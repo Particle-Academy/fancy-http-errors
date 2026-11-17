@@ -1,49 +1,63 @@
-# AGENTS.md — fancy-http-errors
+# Using @particle-academy/fancy-http-errors — guide for agents
 
-Turns any HTTP error response into one safe sentence for the UI. `CLAUDE.md` is
-a symlink to this file. Process rules (publishing, versions, third-party code)
-live in the envelope's `RULES.md` and are not repeated here.
+How an agent installs and uses this package in a consumer app. What the package
+is, is in [README.md](./README.md). Notes for working ON this repo's code are in
+[CONTRIBUTING.md](./CONTRIBUTING.md).
 
-## The contract
-
-fancy-conformance `suites/http/SPEC.md` (CC-fancy-0031), sections 2 and 6, and
-the `http/error-envelope` table this package runs in `tests/conformance.test.ts`.
-The Laravel HTTP-client normaliser in `particle-academy/fancy-http-guard` runs
-the same rows; the PHP and Python guards write their envelopes with the same
-sentence rules. **Change behaviour in the spec and its rows first**, never here
-alone: a sentence that differs between the server that wrote it and the client
-that read it is the drift this exists to prevent.
-
-`envelope.schema.json` is a byte copy of the contract's schema, pinned by
-sha256 (LF-normalised) in `tests/pin.test.ts`. Never edit it here.
-
-## Invariants (each has a test)
-
-- **A 5xx never shows server text**: not the message, not a field, not in any of
-  the five recognised shapes, and not through a `messages` override's context.
-  `fields` is `{}` on status 0 and every 5xx.
-- **Bounded input.** `normaliseResponse` reads at most `maxBodyBytes` and then
-  CANCELS the stream; nesting over `maxDepth` and lone surrogates are
-  unrecognised; messages are cleaned and capped by code points. No regex runs
-  on the body (the one regex on a header is anchored and bounded).
-- **Fields are built as entries**, then `Object.fromEntries`. Assigning a body's
-  key into a plain object lets `__proto__` set the prototype.
-- **Every limit is an option** (`maxBodyBytes`, `maxDepth`, `maxMessageLength`,
-  `requestIdHeader`), with the spec's values as defaults.
-- **Zero runtime dependencies**, no React. A test fails if `dependencies` or
-  `peerDependencies` gains anything.
-
-## Testing
+## Install
 
 ```bash
-npm test          # vitest: the conformance table + hostile cases
-npm run lint      # tsc --noEmit
-npm run build
+npm install @particle-academy/fancy-http-errors
 ```
 
-The table is read from a fancy-conformance CHECKOUT, not from npm:
-`FANCY_CONFORMANCE_ROOT` in CI (checked out at `ref: v<PINNED_SUITE_VERSION>`),
-else the envelope's sibling `../fancy-conformance`. The loader used is the one
-in that checkout, never a copy. A missing checkout fails the run. Move the pin
-in `tests/conformance-root.ts` and the ref in `ci.yml` together, after re-running
-the table against the new checkout.
+- **Not published to npm yet** (version `0.1.0` in the repo). The command above
+  works once it is.
+- Zero runtime dependencies, no React; it runs anywhere `fetch` does.
+
+## Find it on the Fancy MCP server
+
+Not listed on the Fancy MCP catalog server
+(`https://ui.particle.academy/mcp`, MCP id `fancy-ui`) yet; it appears there
+once published. Look for it later with `search-backend-packages` or
+`search-components`. The server-side packages that write the Fancy error
+envelope are `particle-academy/fancy-http-guard` (Laravel) and
+`fancy-http-guard` (Python, FastAPI / Starlette).
+
+## API essentials
+
+```ts
+import { normaliseResponse, normaliseFailure } from "@particle-academy/fancy-http-errors";
+
+const error = await normaliseResponse(res);   // null on a 2xx / 3xx
+if (error) {
+  toast(error.sentence);
+  form.setErrors(error.fields);
+}
+// fetch() threw (no response at all):
+toast(normaliseFailure(e).sentence);
+```
+
+- `normaliseResponse(response, options?)` reads a `fetch` `Response`.
+  `normalise({ status, headers, body, now? }, options?)` takes one you already
+  read. `normaliseFailure(error?, options?)` covers no response (`status: 0`).
+- Result `HttpError`: `status`, `code` (`body_too_large`, `validation_failed`,
+  an app's own code, ...), `sentence` (at most 300 code points), `fields`
+  (dotted path to message), `retryAfter` (seconds or `null`), `requestId`.
+- It recognises the Fancy error envelope, FastAPI `detail` (string or 422 list),
+  Laravel `{ message, errors }`, and non-JSON pages, falling back to a sentence
+  for the status. `Retry-After` (seconds or an HTTP-date) fills `retryAfter`.
+- Options, all with the spec's defaults: `maxBodyBytes` (65536), `maxDepth`
+  (64), `maxMessageLength` (300), `requestIdHeader` (`x-request-id`), and
+  `messages`, a per-code string or function: the translation seam.
+- Helpers: `formatBytes`, `formatDuration`, `sanitise`. The envelope's JSON
+  Schema is `@particle-academy/fancy-http-errors/envelope.schema.json`.
+
+## Traps
+
+- **Render `sentence` as text, never as HTML.**
+- **A 5xx never carries server text**, and its `fields` is `{}` (as on
+  status 0). Show the sentence; quote `requestId` for support.
+- **The body is read to at most `maxBodyBytes`, then the stream is
+  cancelled.**
+- A `messages` override for a 5xx code does not receive server text in its
+  context either.
