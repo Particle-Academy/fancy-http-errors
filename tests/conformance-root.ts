@@ -10,7 +10,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
  * Moving it is a deliberate commit here, never a side effect of someone else's
  * release: re-run the tables against the new checkout FIRST, then move both.
  */
-export const PINNED_SUITE_VERSION = "0.48.0";
+export const PINNED_SUITE_VERSION = "0.62.0";
 
 const here = dirname(fileURLToPath(import.meta.url));
 
