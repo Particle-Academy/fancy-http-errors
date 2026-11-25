@@ -10,6 +10,8 @@ promising otherwise until 1.0.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-24
+
 ### Changed
 
 - `envelope.schema.json` is fancy-conformance 0.64.0's copy: `message` (top
@@ -27,6 +29,11 @@ promising otherwise until 1.0.
 
 - CI: re-pin org third-party allowlist to 2614224
 - Conformance fixtures 0.62.0: the `http/error-envelope` rows are now pinned at fancy-conformance 0.62.0 (was 0.48.0), in the CI checkout ref and `PINNED_SUITE_VERSION`. Test-only; no runtime change, nothing to do.
+
+### Fixed
+
+- AGENTS.md no longer says the package is not published to npm yet: 0.1.0 has
+  been live there since 2026-11-18.
 
 ## [0.1.0] - 2026-11-18
 

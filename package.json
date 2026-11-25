@@ -1,6 +1,6 @@
 {
     "name": "@particle-academy/fancy-http-errors",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "Turn any HTTP error response into one safe sentence for the UI: the Fancy error envelope, FastAPI's detail and 422 lists, Laravel validation, proxy HTML pages, no response at all. A 5xx never shows server text. Zero runtime dependencies, no React.",
     "repository": {
         "type": "git",

@@ -10,8 +10,6 @@ is, is in [README.md](./README.md). Notes for working ON this repo's code are in
 npm install @particle-academy/fancy-http-errors
 ```
 
-- **Not published to npm yet** (version `0.1.0` in the repo). The command above
-  works once it is.
 - Zero runtime dependencies, no React; it runs anywhere `fetch` does.
 
 ## Find it on the Fancy MCP server
