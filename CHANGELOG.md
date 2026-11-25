@@ -12,6 +12,19 @@ promising otherwise until 1.0.
 
 ### Changed
 
+- `envelope.schema.json` is fancy-conformance 0.64.0's copy: `message` (top
+  level and in `errors` items) may now be up to 4,000 characters, was 300,
+  because a Fancy guard can now send that much when its app raises
+  `maxMessageLength` (CC-fancy-0063). If you validate responses with the
+  schema, a long message that the old copy refused now passes; a 300-character
+  message passes under both.
+- **No behaviour change here: `maxMessageLength` still defaults to 300.** To read
+  a longer server message whole, raise it: `normalise(input, { maxMessageLength:
+  4000 })`. Documented in the README and AGENTS.md, and pinned by a test.
+- Conformance fixtures 0.64.0: the pin moves to fancy-conformance 0.64.0 (was
+  0.62.0), in the CI checkout ref and `PINNED_SUITE_VERSION`. The
+  `http/error-envelope` table is unchanged (82 rows). Test-only.
+
 - CI: re-pin org third-party allowlist to 2614224
 - Conformance fixtures 0.62.0: the `http/error-envelope` rows are now pinned at fancy-conformance 0.62.0 (was 0.48.0), in the CI checkout ref and `PINNED_SUITE_VERSION`. Test-only; no runtime change, nothing to do.
 

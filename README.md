@@ -52,7 +52,7 @@ send without it:
 interface HttpError {
   status: number;                    // 0 = no response
   code: string;                      // "body_too_large", "validation_failed", an app's own code ...
-  sentence: string;                  // one plain sentence, at most 300 code points
+  sentence: string;                  // one plain sentence, at most maxMessageLength (300) code points
   fields: Record<string, string>;    // dotted path -> message; {} on a 5xx
   retryAfter: number | null;         // seconds
   requestId: string | null;          // for a support ticket
@@ -73,6 +73,12 @@ normalise(input, {
   },
 });
 ```
+
+`maxMessageLength` stays 300 by default. A Fancy server may send up to 4,000
+code points when its app raises the guard's `maxMessageLength` (CC-fancy-0063);
+this client still cuts at its own option, so a consumer that wants those
+messages whole raises it: `normalise(input, { maxMessageLength: 4000 })`. The
+message is cleaned the same way at any length.
 
 `normalise({status, headers, body, now?})` takes a response you have already
 read. `formatBytes`, `formatDuration` and `sanitise` are the shared sentence

@@ -41,7 +41,7 @@ toast(normaliseFailure(e).sentence);
   `normalise({ status, headers, body, now? }, options?)` takes one you already
   read. `normaliseFailure(error?, options?)` covers no response (`status: 0`).
 - Result `HttpError`: `status`, `code` (`body_too_large`, `validation_failed`,
-  an app's own code, ...), `sentence` (at most 300 code points), `fields`
+  an app's own code, ...), `sentence` (at most `maxMessageLength`, 300 by default, code points), `fields`
   (dotted path to message), `retryAfter` (seconds or `null`), `requestId`.
 - It recognises the Fancy error envelope, FastAPI `detail` (string or 422 list),
   Laravel `{ message, errors }`, and non-JSON pages, falling back to a sentence
@@ -49,6 +49,10 @@ toast(normaliseFailure(e).sentence);
 - Options, all with the spec's defaults: `maxBodyBytes` (65536), `maxDepth`
   (64), `maxMessageLength` (300), `requestIdHeader` (`x-request-id`), and
   `messages`, a per-code string or function: the translation seam.
+- **Longer server messages:** a Fancy guard whose app raised its
+  `maxMessageLength` may send up to 4,000 code points. The default here stays
+  300, so pass `{ maxMessageLength: 4000 }` (or what the server allows) to read
+  them whole; nothing else about cleaning changes.
 - Helpers: `formatBytes`, `formatDuration`, `sanitise`. The envelope's JSON
   Schema is `@particle-academy/fancy-http-errors/envelope.schema.json`.
 

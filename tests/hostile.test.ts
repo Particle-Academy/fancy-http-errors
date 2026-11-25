@@ -133,6 +133,19 @@ describe("message hygiene", () => {
     expect(r.sentence).toBe("abcd…");
   });
 
+  it("keeps 300 by default for a server that sent a longer message; raising the option reads it whole (CC-fancy-0063)", () => {
+    // A guard with maxMessageLength raised may send up to 4,000 code points.
+    // The client's default stays 300; a consumer that wants the whole message
+    // raises its own option. Pins the documented path, not a behaviour change.
+    const long = Array.from({ length: 30 }, (_, i) => `Row ${i + 1} has a quantity below the minimum of 1.`).join(" ");
+    expect(Array.from(long).length).toBeGreaterThan(1000);
+    const body = JSON.stringify({ error: "rows_refused", message: long, requestId: "req-1" });
+    const byDefault = normalise({ status: 422, headers: {}, body })!;
+    expect(Array.from(byDefault.sentence).length).toBe(300);
+    const raised = normalise({ status: 422, headers: {}, body }, { maxMessageLength: 4000 })!;
+    expect(raised.sentence).toBe(long);
+  });
+
   it("markup is returned as text, never interpreted", () => {
     const r = normalise({ status: 400, headers: {}, body: JSON.stringify({ detail: "<img src=x onerror=alert(1)>" }) })!;
     expect(r.sentence).toBe("<img src=x onerror=alert(1)>");
